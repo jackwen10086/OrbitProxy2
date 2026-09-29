@@ -107,6 +107,68 @@ type Node = {
   detail?: NodeDetail;
 };
 
+type PresetApp = {
+  id: string;
+  name: string;
+  exe: string;
+  category: "包管理器" | "版本控制" | "开发工具" | "编辑器IDE" | "通讯协作" | "其他工具";
+  desc: string;
+  defaultPath: string;
+  detected: boolean;
+  detectedPath: string;
+  enabled: boolean;
+  proxyId: number | null;
+};
+
+const presetAppList: Omit<PresetApp, "detected" | "detectedPath" | "enabled" | "proxyId">[] = [
+  // 包管理器 — 按实际代理的 exe 合并
+  { id: "nodejs", name: "Node.js 运行时", exe: "node.exe", category: "包管理器", desc: "覆盖 npm · pnpm · yarn · npx · bun", defaultPath: "C:\\Program Files\\nodejs\\node.exe" },
+  { id: "python", name: "Python 运行时", exe: "python.exe", category: "包管理器", desc: "覆盖 pip · pip3 · conda · poetry", defaultPath: "C:\\Python312\\python.exe" },
+  { id: "go", name: "Go 运行时", exe: "go.exe", category: "包管理器", desc: "覆盖 go get · go install · go mod", defaultPath: "C:\\Program Files\\Go\\bin\\go.exe" },
+  { id: "cargo", name: "Rust / Cargo", exe: "cargo.exe", category: "包管理器", desc: "覆盖 cargo add · cargo install · rustup", defaultPath: "C:\\Users\\User\\.cargo\\bin\\cargo.exe" },
+  { id: "java", name: "Java 运行时 (JDK)", exe: "java.exe", category: "包管理器", desc: "覆盖 Maven(mvn) · Gradle · Kotlin 编译", defaultPath: "C:\\Program Files\\Java\\jdk-21\\bin\\java.exe" },
+  { id: "dart", name: "Dart / Flutter", exe: "dart.exe", category: "包管理器", desc: "覆盖 flutter pub get · dart pub", defaultPath: "C:\\flutter\\bin\\dart.exe" },
+  { id: "php", name: "PHP / Composer", exe: "php.exe", category: "包管理器", desc: "覆盖 composer install · composer update", defaultPath: "C:\\php\\php.exe" },
+  { id: "ruby", name: "Ruby / Gem", exe: "ruby.exe", category: "包管理器", desc: "覆盖 gem install · bundle install", defaultPath: "C:\\Ruby33\\bin\\ruby.exe" },
+  { id: "dotnet", name: ".NET / NuGet", exe: "dotnet.exe", category: "包管理器", desc: "覆盖 dotnet restore · nuget · paket", defaultPath: "C:\\Program Files\\dotnet\\dotnet.exe" },
+  { id: "winget", name: "winget", exe: "winget.exe", category: "包管理器", desc: "Windows 应用包管理器（独立 exe）", defaultPath: "C:\\Users\\User\\AppData\\Local\\Microsoft\\WindowsApps\\winget.exe" },
+  { id: "scoop", name: "Scoop", exe: "scoop.exe", category: "包管理器", desc: "Windows 命令行安装器（独立 exe）", defaultPath: "C:\\Users\\User\\scoop\\shims\\scoop.exe" },
+  { id: "choco", name: "Chocolatey", exe: "choco.exe", category: "包管理器", desc: "Windows 软件包管理器（独立 exe）", defaultPath: "C:\\ProgramData\\chocolatey\\bin\\choco.exe" },
+  // 版本控制
+  { id: "git", name: "Git", exe: "git.exe", category: "版本控制", desc: "覆盖 git clone · git fetch · git push", defaultPath: "C:\\Program Files\\Git\\bin\\git.exe" },
+  { id: "github-desktop", name: "GitHub Desktop", exe: "GitHubDesktop.exe", category: "版本控制", desc: "GitHub 官方桌面客户端", defaultPath: "C:\\Users\\User\\AppData\\Local\\GitHubDesktop\\GitHubDesktop.exe" },
+  { id: "gh-cli", name: "GitHub CLI (gh)", exe: "gh.exe", category: "版本控制", desc: "覆盖 gh repo clone · gh release download", defaultPath: "C:\\Program Files\\GitHub CLI\\gh.exe" },
+  { id: "sourcetree", name: "Sourcetree", exe: "SourceTree.exe", category: "版本控制", desc: "Atlassian Git 可视化工具", defaultPath: "C:\\Users\\User\\AppData\\Local\\SourceTree\\SourceTree.exe" },
+  // 开发工具
+  { id: "curl", name: "curl", exe: "curl.exe", category: "开发工具", desc: "命令行 HTTP 请求 / 文件下载", defaultPath: "C:\\Windows\\System32\\curl.exe" },
+  { id: "wget", name: "wget", exe: "wget.exe", category: "开发工具", desc: "文件批量下载工具", defaultPath: "C:\\Program Files\\GnuWin32\\bin\\wget.exe" },
+  { id: "docker", name: "Docker Desktop", exe: "Docker Desktop.exe", category: "开发工具", desc: "覆盖镜像拉取 · docker pull · compose", defaultPath: "C:\\Program Files\\Docker\\Docker\\Docker Desktop.exe" },
+  { id: "kubectl", name: "kubectl", exe: "kubectl.exe", category: "开发工具", desc: "Kubernetes 集群管理工具", defaultPath: "C:\\Program Files\\kubectl\\kubectl.exe" },
+  { id: "helm", name: "Helm", exe: "helm.exe", category: "开发工具", desc: "Kubernetes Chart 包管理", defaultPath: "C:\\ProgramData\\chocolatey\\bin\\helm.exe" },
+  { id: "terraform", name: "Terraform", exe: "terraform.exe", category: "开发工具", desc: "覆盖 provider 下载 · module 拉取", defaultPath: "C:\\Program Files\\Terraform\\terraform.exe" },
+  { id: "postman", name: "Postman", exe: "Postman.exe", category: "开发工具", desc: "API 调试 / 测试工具", defaultPath: "C:\\Users\\User\\AppData\\Local\\Postman\\Postman.exe" },
+  { id: "insomnia", name: "Insomnia", exe: "Insomnia.exe", category: "开发工具", desc: "REST / GraphQL 客户端", defaultPath: "C:\\Users\\User\\AppData\\Local\\insomnia\\Insomnia.exe" },
+  // 编辑器/IDE
+  { id: "vscode", name: "VS Code", exe: "Code.exe", category: "编辑器IDE", desc: "覆盖插件下载 · 扩展市场请求", defaultPath: "C:\\Users\\User\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe" },
+  { id: "cursor", name: "Cursor", exe: "Cursor.exe", category: "编辑器IDE", desc: "AI 代码编辑器 · 模型 API 请求", defaultPath: "C:\\Users\\User\\AppData\\Local\\Programs\\cursor\\Cursor.exe" },
+  { id: "jetbrains", name: "JetBrains Toolbox", exe: "jetbrains-toolbox.exe", category: "编辑器IDE", desc: "覆盖 IDE 下载 · 插件更新", defaultPath: "C:\\Users\\User\\AppData\\Local\\JetBrains\\Toolbox\\bin\\jetbrains-toolbox.exe" },
+  { id: "idea", name: "IntelliJ IDEA", exe: "idea64.exe", category: "编辑器IDE", desc: "Java/Kotlin IDE · 覆盖插件下载", defaultPath: "C:\\Program Files\\JetBrains\\IntelliJ IDEA\\bin\\idea64.exe" },
+  { id: "pycharm", name: "PyCharm", exe: "pycharm64.exe", category: "编辑器IDE", desc: "Python IDE · 覆盖插件下载", defaultPath: "C:\\Program Files\\JetBrains\\PyCharm\\bin\\pycharm64.exe" },
+  { id: "webstorm", name: "WebStorm", exe: "webstorm64.exe", category: "编辑器IDE", desc: "前端 IDE · 覆盖插件下载", defaultPath: "C:\\Program Files\\JetBrains\\WebStorm\\bin\\webstorm64.exe" },
+  // 通讯协作
+  { id: "slack", name: "Slack", exe: "slack.exe", category: "通讯协作", desc: "团队即时通讯工具", defaultPath: "C:\\Users\\User\\AppData\\Local\\slack\\slack.exe" },
+  { id: "discord", name: "Discord", exe: "Discord.exe", category: "通讯协作", desc: "社区语音 / 文字平台", defaultPath: "C:\\Users\\User\\AppData\\Local\\Discord\\Discord.exe" },
+  { id: "zoom", name: "Zoom", exe: "Zoom.exe", category: "通讯协作", desc: "视频会议工具", defaultPath: "C:\\Users\\User\\AppData\\Roaming\\Zoom\\bin\\Zoom.exe" },
+  { id: "telegram", name: "Telegram", exe: "Telegram.exe", category: "通讯协作", desc: "加密即时通讯", defaultPath: "C:\\Users\\User\\AppData\\Roaming\\Telegram Desktop\\Telegram.exe" },
+  { id: "teams", name: "Microsoft Teams", exe: "ms-teams.exe", category: "通讯协作", desc: "微软企业协作平台", defaultPath: "C:\\Users\\User\\AppData\\Local\\Microsoft\\Teams\\current\\Teams.exe" },
+  // 其他工具
+  { id: "chrome", name: "Google Chrome", exe: "chrome.exe", category: "其他工具", desc: "浏览器 · 建议用系统代理替代", defaultPath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" },
+  { id: "firefox", name: "Firefox", exe: "firefox.exe", category: "其他工具", desc: "浏览器 · 建议用系统代理替代", defaultPath: "C:\\Program Files\\Mozilla Firefox\\firefox.exe" },
+  { id: "edge", name: "Microsoft Edge", exe: "msedge.exe", category: "其他工具", desc: "浏览器 · 建议用系统代理替代", defaultPath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe" },
+  { id: "winscp", name: "WinSCP", exe: "WinSCP.exe", category: "其他工具", desc: "SFTP / SCP 文件传输工具", defaultPath: "C:\\Program Files (x86)\\WinSCP\\WinSCP.exe" },
+  { id: "putty", name: "PuTTY", exe: "putty.exe", category: "其他工具", desc: "SSH 终端客户端", defaultPath: "C:\\Program Files\\PuTTY\\putty.exe" },
+];
+
 type SocksProxy = {
   id: number;
   port: number;
@@ -492,7 +554,7 @@ function ClaudeLauncher({ notify, copyText }: { notify: (message: string) => voi
   const innerTitle = sections.find((item) => item.key === section)?.label;
 
   return (
-    <div className="min-h-screen bg-claude text-white">
+    <div className="min-h-screen min-w-[1200px] bg-claude text-white overflow-x-auto">
       <div className="flex min-h-screen">
         <aside className="w-56 shrink-0 border-r border-white/8 bg-claude-side p-4">
           <div className="mb-5 flex items-center gap-3 rounded-2xl border border-white/8 bg-white/5 p-3">
@@ -844,6 +906,14 @@ export default function App() {
   const [licenseCode, setLicenseCode] = useState("");
   const [licenseActive, setLicenseActive] = useState(true);
   const [licenseExpiry, setLicenseExpiry] = useState("2026-08-28");
+  const [presetApps, setPresetApps] = useState<PresetApp[]>(
+    presetAppList.map((a) => ({ ...a, detected: false, detectedPath: "", enabled: false, proxyId: null }))
+  );
+  const [detectingApps, setDetectingApps] = useState(false);
+  const [appSearchQuery, setAppSearchQuery] = useState("");
+  const [selectedAppIds, setSelectedAppIds] = useState<string[]>([]);
+  const [batchProxyId, setBatchProxyId] = useState<number | null>(null);
+  const [appCategory, setAppCategory] = useState<string>("全部");
   const [appExe, setAppExe] = useState("");
   const [appProxyId, setAppProxyId] = useState(1);
   const [appProfiles, setAppProfiles] = useState([
@@ -1006,88 +1076,145 @@ export default function App() {
   return (
     <main className="min-h-screen bg-canvas text-ink">
       <div className="flex min-h-screen">
-        <aside className="fixed inset-y-0 left-0 z-20 flex w-64 flex-col border-r border-line bg-sidebar p-4">
-          <div className="flex h-14 items-center gap-3 px-3">
-            <div className="flex size-9 items-center justify-center rounded-xl bg-ink text-white shadow-sm">
-              <Icon name="shield" className="size-5" />
+
+        {/* 侧边栏：平板为图标 rail，桌面为完整侧栏 */}
+        <aside className="fixed inset-y-0 left-0 z-20 hidden flex-col border-r border-line bg-sidebar md:flex md:w-14 lg:w-56 md:px-1.5 md:py-3 lg:px-3">
+          {/* Logo */}
+          <div className="flex h-11 items-center justify-center lg:justify-start lg:gap-2.5 lg:px-2">
+            <div className="flex size-8 shrink-0 items-center justify-center rounded-xl bg-ink text-white shadow-sm">
+              <Icon name="shield" className="size-4" />
             </div>
-            <div>
-              <div className="text-base font-bold tracking-tight">Orbit Proxy</div>
-              <div className="text-xs text-subtle">安全连接管理器</div>
+            <div className="hidden lg:block">
+              <div className="text-sm font-bold tracking-tight">Orbit Proxy</div>
+              <div className="text-[11px] text-subtle">安全连接管理器</div>
             </div>
           </div>
 
-          <nav className="mt-7 space-y-1">
-            <div className="mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-subtle">工作台</div>
+          {/* 导航 */}
+          <nav className="mt-4 space-y-0.5">
+            <div className="mb-1.5 hidden px-2 text-[10px] font-semibold uppercase tracking-wider text-subtle lg:block">工作台</div>
             {navItems.map((item) => (
-              <button
-                key={item.key}
-                onClick={() => setPage(item.key)}
-                className={`flex h-11 w-full items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-colors ${page === item.key ? "bg-white text-ink shadow-xs" : "text-muted hover:bg-white/70 hover:text-ink"}`}
-              >
-                <Icon name={item.icon} className={`size-5 ${page === item.key ? "text-accent" : ""}`} />
-                {item.label}
-                {item.key === "nodes" && <span className="ml-auto rounded-full bg-panel px-2 py-0.5 text-xs text-subtle">{nodes.length}</span>}
+              <button key={item.key} onClick={() => setPage(item.key)}
+                title={item.label}
+                className={`flex h-9 w-full items-center justify-center rounded-lg transition-colors lg:justify-start lg:gap-2.5 lg:px-2 ${page === item.key ? "bg-white text-ink shadow-xs" : "text-muted hover:bg-white/70 hover:text-ink"}`}>
+                <Icon name={item.icon} className={`size-4 shrink-0 ${page === item.key ? "text-accent" : ""}`} />
+                <span className="hidden text-sm font-semibold lg:inline">{item.label}</span>
+                {item.key === "nodes" && <span className="ml-auto hidden rounded-full bg-panel px-1.5 py-0.5 text-xs text-subtle lg:inline">{nodes.length}</span>}
               </button>
             ))}
           </nav>
 
-          <div className="mt-8 mb-2 px-3 text-xs font-semibold uppercase tracking-wider text-subtle">系统</div>
-          <Button variant="ghost" icon="settings" className="!w-full !justify-start !px-3">设置</Button>
-          <Button variant="ghost" icon="help" className="!w-full !justify-start !px-3">帮助与反馈</Button>
+          <div className="mt-5 mb-1 hidden px-2 text-[10px] font-semibold uppercase tracking-wider text-subtle lg:block">系统</div>
+          <button title="设置" className="flex h-9 w-full items-center justify-center rounded-lg text-muted transition hover:bg-white/70 hover:text-ink lg:justify-start lg:gap-2.5 lg:px-2">
+            <Icon name="settings" className="size-4 shrink-0" />
+            <span className="hidden text-sm font-semibold lg:inline">设置</span>
+          </button>
+          <button title="帮助与反馈" className="flex h-9 w-full items-center justify-center rounded-lg text-muted transition hover:bg-white/70 hover:text-ink lg:justify-start lg:gap-2.5 lg:px-2">
+            <Icon name="help" className="size-4 shrink-0" />
+            <span className="hidden text-sm font-semibold lg:inline">帮助与反馈</span>
+          </button>
 
-          <button onClick={() => setPage("license")} className="mt-auto w-full rounded-2xl border border-line bg-white p-3 text-left shadow-xs transition hover:border-accent">
-            <div className="flex items-center gap-3">
-              <div className="relative flex size-9 items-center justify-center rounded-full bg-emerald-soft text-emerald">
-                <Icon name="shield" className="size-4" />
-                <span className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2 border-white bg-emerald" />
+          {/* 授权卡片：桌面展开，平板图标 */}
+          <button onClick={() => setPage("license")} className="mt-auto" title="专业版已激活">
+            <div className="hidden w-full rounded-2xl border border-line bg-white p-3 text-left shadow-xs transition hover:border-accent lg:block">
+              <div className="flex items-center gap-3">
+                <div className="relative flex size-9 items-center justify-center rounded-full bg-emerald-soft text-emerald">
+                  <Icon name="shield" className="size-4" />
+                  <span className="absolute -right-0.5 -bottom-0.5 size-2.5 rounded-full border-2 border-white bg-emerald" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <div className="text-sm font-semibold">专业版已激活</div>
+                  <div className="text-xs text-subtle">到期：{licenseExpiry}</div>
+                </div>
+                <Icon name="chevron" className="size-4 text-subtle" />
               </div>
-              <div className="min-w-0 flex-1">
-                <div className="text-sm font-semibold">专业版已激活</div>
-                <div className="text-xs text-subtle">到期：{licenseExpiry}</div>
+            </div>
+            <div className="flex h-9 w-full items-center justify-center lg:hidden">
+              <div className="relative flex size-7 items-center justify-center rounded-full bg-emerald-soft text-emerald">
+                <Icon name="shield" className="size-3.5" />
+                <span className="absolute -right-0.5 -bottom-0.5 size-2 rounded-full border-2 border-sidebar bg-emerald" />
               </div>
-              <Icon name="chevron" className="size-4 text-subtle" />
             </div>
           </button>
         </aside>
 
-        <section className="ml-64 min-w-0 flex-1">
-          <header className={`sticky top-0 z-10 h-20 items-center justify-between border-b border-line bg-canvas/90 px-8 backdrop-blur-xl ${page === "claude" ? "hidden" : "flex"}`}>
-            <div>
-              <div className="text-xl font-bold tracking-tight">{pageTitle}</div>
-              <div className="mt-0.5 text-sm text-muted">{pageDescription}</div>
+        {/* 移动端顶部栏（<md 显示） */}
+        <div className="fixed inset-x-0 top-0 z-30 flex h-14 items-center justify-between border-b border-line bg-white/95 px-4 backdrop-blur-xl md:hidden">
+          <div className="flex items-center gap-2.5">
+            <div className="flex size-8 items-center justify-center rounded-lg bg-ink text-white">
+              <Icon name="shield" className="size-4" />
             </div>
-            <div className="flex items-center gap-3">
-              <div className="mr-1 flex items-center rounded-xl border border-line bg-white p-1 shadow-xs">
+            <span className="text-sm font-bold tracking-tight">Orbit Proxy</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => { setSystemProxy((c) => !c); notify(systemProxy ? "已关闭系统代理" : "已开启系统代理"); }}
+              className={`flex h-8 items-center gap-1.5 rounded-lg px-3 text-xs font-semibold transition ${systemProxy ? "bg-emerald-soft text-emerald" : "bg-panel text-muted"}`}
+            >
+              <span className={`size-1.5 rounded-full ${systemProxy ? "bg-emerald" : "bg-subtle"}`} />
+              {proxyMode}
+            </button>
+            <button onClick={() => setImportOpen(true)} className="flex size-8 items-center justify-center rounded-lg border border-line bg-white text-muted">
+              <Icon name="download" className="size-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* 移动端底部导航（<md 显示） */}
+        <nav className="fixed inset-x-0 bottom-0 z-30 flex border-t border-line bg-white/95 backdrop-blur-xl md:hidden">
+          {[
+            { key: "overview", label: "概览", icon: "grid" },
+            { key: "nodes", label: "节点", icon: "globe" },
+            { key: "socks", label: "SOCKS5", icon: "server" },
+            { key: "claude", label: "Claude", icon: "terminal" },
+            { key: "routing", label: "路由", icon: "route" },
+          ].map((item) => (
+            <button key={item.key} onClick={() => setPage(item.key as Page)}
+              className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${page === item.key ? "text-accent" : "text-subtle"}`}>
+              <Icon name={item.icon as IconName} className="size-5" />
+              {item.label}
+            </button>
+          ))}
+          <button onClick={() => setPage("license")}
+            className={`flex flex-1 flex-col items-center gap-1 py-2.5 text-xs font-semibold transition ${page === "license" || page === "apps" || page === "subscriptions" || page === "logs" ? "text-accent" : "text-subtle"}`}>
+            <Icon name="more" className="size-5" />
+            更多
+          </button>
+        </nav>
+
+        <section className="min-w-0 flex-1 pt-14 pb-20 md:ml-14 md:pt-0 md:pb-0 lg:ml-56">
+          <header className={`sticky top-14 z-10 h-14 items-center justify-between border-b border-line bg-canvas/90 px-4 backdrop-blur-xl md:top-0 md:px-5 lg:px-6 ${page === "claude" ? "hidden" : "flex"}`}>
+            <div>
+              <div className="text-sm font-bold tracking-tight md:text-base">{pageTitle}</div>
+              <div className="hidden text-xs text-muted md:block mt-0.5">{pageDescription}</div>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="hidden items-center rounded-xl border border-line bg-white p-1 shadow-xs md:flex mr-1">
                 {(["规则", "全局", "直连"] as const).map((mode) => (
-                  <button
-                    key={mode}
-                    onClick={() => setProxyMode(mode)}
-                    className={`h-8 rounded-lg px-3 text-xs font-semibold transition ${proxyMode === mode ? "bg-ink text-white" : "text-muted hover:text-ink"}`}
-                  >
+                  <button key={mode} onClick={() => setProxyMode(mode)}
+                    className={`h-8 rounded-lg px-3 text-xs font-semibold transition ${proxyMode === mode ? "bg-ink text-white" : "text-muted hover:text-ink"}`}>
                     {mode}
                   </button>
                 ))}
               </div>
               <button
-                onClick={() => {
-                  setSystemProxy((current) => !current);
-                  notify(systemProxy ? "已关闭系统代理" : "已开启系统代理");
-                }}
-                className={`flex h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition ${systemProxy ? "bg-emerald-soft text-emerald" : "bg-panel text-muted"}`}
-              >
+                onClick={() => { setSystemProxy((c) => !c); notify(systemProxy ? "已关闭系统代理" : "已开启系统代理"); }}
+                className={`hidden h-10 items-center gap-2 rounded-xl px-4 text-sm font-semibold transition md:flex ${systemProxy ? "bg-emerald-soft text-emerald" : "bg-panel text-muted"}`}>
                 <span className={`size-2 rounded-full ${systemProxy ? "bg-emerald" : "bg-subtle"}`} />
                 系统代理
               </button>
-              <Button icon="download" onClick={() => setImportOpen(true)}>导入节点</Button>
-              <Button variant="primary" icon="plus" onClick={() => setProxyOpen(true)}>新建 SOCKS5</Button>
+              <Button icon="download" className="hidden md:inline-flex" onClick={() => setImportOpen(true)}>导入节点</Button>
+              <Button variant="primary" icon="plus" className="!h-9 !px-3 !text-xs lg:!h-10 lg:!px-4 lg:!text-sm" onClick={() => setProxyOpen(true)}>
+                <span className="hidden lg:inline">新建 SOCKS5</span>
+                <span className="lg:hidden">新建</span>
+              </Button>
             </div>
           </header>
 
-          <div className={page === "claude" ? "" : "mx-auto max-w-screen-xl p-8"}>
+          <div className={page === "claude" ? "" : "p-4 lg:p-5"}>
             {page === "overview" && (
               <div className="space-y-7">
-                <div className="grid gap-5 lg:grid-cols-3">
+                <div className="grid gap-5 md:grid-cols-3">
                   <div className="relative overflow-hidden rounded-3xl bg-ink p-6 text-white shadow-card lg:col-span-2">
                     <div className="absolute -right-16 -top-24 size-72 rounded-full bg-accent-glow blur-3xl" />
                     <div className="relative flex h-full min-h-48 flex-col justify-between">
@@ -1229,7 +1356,8 @@ export default function App() {
                     </div>
                     <div className="text-sm text-muted">共 {filteredNodes.length} 个节点</div>
                   </div>
-                  <div className="grid grid-cols-[2rem_1.5rem_minmax(0,1.5fr)_1fr_0.5fr_0.5fr_auto] gap-4 border-b border-line bg-canvas px-6 py-3 text-xs font-semibold uppercase tracking-wider text-subtle">
+                  {/* 桌面表头 */}
+                  <div className="hidden grid-cols-[2rem_1.5rem_minmax(0,1.5fr)_1fr_0.5fr_0.5fr_auto] gap-4 border-b border-line bg-canvas px-6 py-3 text-xs font-semibold uppercase tracking-wider text-subtle md:grid">
                     <input type="checkbox" className="size-4 accent-accent" checked={selectedNodeIds.length === filteredNodes.length && filteredNodes.length > 0} onChange={(e) => setSelectedNodeIds(e.target.checked ? filteredNodes.map((n) => n.id) : [])} />
                     <div title="默认代理">代理</div>
                     <div>节点</div><div>地址</div><div>协议</div><div>延迟</div><div className="text-right">SOCKS5 / 操作</div>
@@ -1239,62 +1367,72 @@ export default function App() {
                       const linkedProxy = proxies.find((p) => p.nodeId === node.id);
                       const isSelected = selectedNodeIds.includes(node.id);
                       return (
-                        <div
-                          key={node.id}
-                          className={`grid grid-cols-[2rem_1.5rem_minmax(0,1.5fr)_1fr_0.5fr_0.5fr_auto] items-center gap-4 px-6 py-4 transition-colors hover:bg-canvas ${isSelected ? "bg-accent-soft" : ""}`}
-                          onContextMenu={(e) => {
-                            e.preventDefault();
-                            if (!isSelected) setSelectedNodeIds([node.id]);
-                            setContextMenu({ node, x: e.clientX, y: e.clientY });
-                          }}
-                        >
-                          <input type="checkbox" className="size-4 accent-accent" checked={isSelected} onChange={(e) => setSelectedNodeIds((prev) => e.target.checked ? [...prev, node.id] : prev.filter((id) => id !== node.id))} onClick={(e) => e.stopPropagation()} />
-                          <button
-                            title={node.active ? "当前默认代理节点" : "设为默认代理节点"}
-                            onClick={() => { if (!node.active) { setNodes((cur) => cur.map((n) => ({ ...n, active: n.id === node.id }))); notify(`已将「${node.name}」设为默认代理节点`); } }}
-                            className="flex items-center justify-center"
-                          >
-                            <span className={`flex size-4 items-center justify-center rounded-full border-2 transition ${node.active ? "border-emerald bg-emerald" : "border-line-strong hover:border-emerald/60"}`}>
-                              {node.active && <span className="size-1.5 rounded-full bg-white" />}
-                            </span>
-                          </button>
-                          <div className="flex min-w-0 items-center gap-3">
-                            <div className="flex size-10 items-center justify-center rounded-xl bg-panel font-mono text-xs font-bold">{node.flag}</div>
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-2 truncate text-sm font-semibold">
-                                {node.name}
-                                {node.active && <span className="rounded-full bg-emerald-soft px-2 py-0.5 text-xs font-semibold text-emerald">默认代理</span>}
+                        <div key={node.id} onContextMenu={(e) => { e.preventDefault(); if (!isSelected) setSelectedNodeIds([node.id]); setContextMenu({ node, x: e.clientX, y: e.clientY }); }}>
+                          {/* 桌面行 */}
+                          <div className={`hidden grid-cols-[2rem_1.5rem_minmax(0,1.5fr)_1fr_0.5fr_0.5fr_auto] items-center gap-4 px-6 py-4 transition-colors hover:bg-canvas md:grid ${isSelected ? "bg-accent-soft" : ""}`}>
+                            <input type="checkbox" className="size-4 accent-accent" checked={isSelected} onChange={(e) => setSelectedNodeIds((prev) => e.target.checked ? [...prev, node.id] : prev.filter((id) => id !== node.id))} onClick={(e) => e.stopPropagation()} />
+                            <button title={node.active ? "当前默认代理节点" : "设为默认代理节点"} onClick={() => { if (!node.active) { setNodes((cur) => cur.map((n) => ({ ...n, active: n.id === node.id }))); notify(`已将「${node.name}」设为默认代理节点`); } }} className="flex items-center justify-center">
+                              <span className={`flex size-4 items-center justify-center rounded-full border-2 transition ${node.active ? "border-emerald bg-emerald" : "border-line-strong hover:border-emerald/60"}`}>
+                                {node.active && <span className="size-1.5 rounded-full bg-white" />}
+                              </span>
+                            </button>
+                            <div className="flex min-w-0 items-center gap-3">
+                              <div className="flex size-10 items-center justify-center rounded-xl bg-panel font-mono text-xs font-bold">{node.flag}</div>
+                              <div className="min-w-0">
+                                <div className="flex items-center gap-2 truncate text-sm font-semibold">{node.name}{node.active && <span className="rounded-full bg-emerald-soft px-2 py-0.5 text-xs font-semibold text-emerald">默认代理</span>}</div>
+                                <div className="mt-1 text-xs text-muted">{node.region}</div>
                               </div>
-                              <div className="mt-1 text-xs text-muted">{node.region}</div>
+                            </div>
+                            <div className="truncate font-mono text-xs text-muted">{node.address}</div>
+                            <div><ProtocolBadge protocol={node.protocol} /></div>
+                            <div className={`font-mono text-sm font-semibold ${node.latency && node.latency < 100 ? "text-emerald" : "text-amber"}`}>{node.latency || "—"} ms</div>
+                            <div className="flex items-center justify-end gap-1">
+                              {linkedProxy ? (
+                                <button onClick={() => copyText(`socks5://127.0.0.1:${linkedProxy.port}`)} className={`flex h-8 items-center gap-1.5 rounded-lg border px-2.5 font-mono text-xs font-semibold transition ${linkedProxy.running ? "border-emerald/30 bg-emerald-soft text-emerald hover:bg-emerald/15" : "border-line bg-canvas text-muted hover:bg-panel"}`} title="复制 SOCKS5 地址">
+                                  <Icon name="copy" className="size-3.5" />:{linkedProxy.port}
+                                </button>
+                              ) : (
+                                <button onClick={() => createSocksForNode(node.id)} className="flex h-8 items-center gap-1.5 rounded-lg border border-dashed border-line px-2.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-accent" title="生成 SOCKS5">
+                                  <Icon name="plus" className="size-3.5" />SOCKS5
+                                </button>
+                              )}
+                              <Button variant="ghost" className="!h-8 !px-2.5 !text-xs" icon="activity" onClick={() => testNode(node.id)} disabled={testingNode === node.id}>{testingNode === node.id ? "…" : "测试"}</Button>
+                              <Button variant="ghost" className="!size-8 !p-0" onClick={() => setEditingNode(node)} aria-label="编辑节点"><Icon name="settings" className="size-4" /></Button>
+                              <Button variant="ghost" className="!size-8 !p-0" onClick={() => exportNode(node)} aria-label="导出节点二维码"><Icon name="copy" className="size-4" /></Button>
+                              <Button variant="danger" className="!size-8 !p-0" onClick={() => deleteNode(node.id)} aria-label="删除节点"><Icon name="trash" className="size-4" /></Button>
                             </div>
                           </div>
-                          <div className="truncate font-mono text-xs text-muted">{node.address}</div>
-                          <div><ProtocolBadge protocol={node.protocol} /></div>
-                          <div className={`font-mono text-sm font-semibold ${node.latency && node.latency < 100 ? "text-emerald" : "text-amber"}`}>{node.latency || "—"} ms</div>
-                          <div className="flex items-center justify-end gap-1">
-                            {linkedProxy ? (
-                              <button
-                                onClick={() => copyText(`socks5://127.0.0.1:${linkedProxy.port}`)}
-                                className={`flex h-8 items-center gap-1.5 rounded-lg border px-2.5 font-mono text-xs font-semibold transition ${linkedProxy.running ? "border-emerald/30 bg-emerald-soft text-emerald hover:bg-emerald/15" : "border-line bg-canvas text-muted hover:bg-panel"}`}
-                                title="复制 SOCKS5 地址"
-                              >
-                                <Icon name="copy" className="size-3.5" />
-                                :{linkedProxy.port}
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => createSocksForNode(node.id)}
-                                className="flex h-8 items-center gap-1.5 rounded-lg border border-dashed border-line px-2.5 text-xs font-semibold text-muted transition hover:border-accent hover:text-accent"
-                                title="生成 SOCKS5"
-                              >
-                                <Icon name="plus" className="size-3.5" />
-                                SOCKS5
-                              </button>
-                            )}
-                            <Button variant="ghost" className="!h-8 !px-2.5 !text-xs" icon="activity" onClick={() => testNode(node.id)} disabled={testingNode === node.id}>{testingNode === node.id ? "…" : "测试"}</Button>
-                            <Button variant="ghost" className="!size-8 !p-0" onClick={() => setEditingNode(node)} aria-label="编辑节点"><Icon name="settings" className="size-4" /></Button>
-                            <Button variant="ghost" className="!size-8 !p-0" onClick={() => exportNode(node)} aria-label="导出节点二维码"><Icon name="copy" className="size-4" /></Button>
-                            <Button variant="danger" className="!size-8 !p-0" onClick={() => deleteNode(node.id)} aria-label="删除节点"><Icon name="trash" className="size-4" /></Button>
+                          {/* 移动端卡片 */}
+                          <div className={`flex items-center gap-3 px-4 py-3.5 md:hidden ${isSelected ? "bg-accent-soft" : ""}`}>
+                            <button onClick={() => { if (!node.active) { setNodes((cur) => cur.map((n) => ({ ...n, active: n.id === node.id }))); notify(`已将「${node.name}」设为默认代理节点`); } }} className="shrink-0">
+                              <span className={`flex size-5 items-center justify-center rounded-full border-2 transition ${node.active ? "border-emerald bg-emerald" : "border-line-strong"}`}>
+                                {node.active && <span className="size-2 rounded-full bg-white" />}
+                              </span>
+                            </button>
+                            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-panel font-mono text-xs font-bold">{node.flag}</div>
+                            <div className="min-w-0 flex-1">
+                              <div className="flex items-center gap-1.5 text-sm font-semibold">
+                                {node.name}
+                                {node.active && <span className="rounded-full bg-emerald-soft px-1.5 py-0.5 text-xs text-emerald">默认</span>}
+                              </div>
+                              <div className="mt-0.5 flex items-center gap-2 text-xs text-muted">
+                                <ProtocolBadge protocol={node.protocol} />
+                                <span className={`font-mono font-semibold ${node.latency && node.latency < 100 ? "text-emerald" : "text-amber"}`}>{node.latency || "—"} ms</span>
+                              </div>
+                            </div>
+                            <div className="flex shrink-0 items-center gap-1">
+                              {linkedProxy ? (
+                                <button onClick={() => copyText(`socks5://127.0.0.1:${linkedProxy.port}`)} className={`flex h-8 items-center gap-1 rounded-lg border px-2 font-mono text-xs font-semibold ${linkedProxy.running ? "border-emerald/30 bg-emerald-soft text-emerald" : "border-line text-muted"}`}>
+                                  <Icon name="copy" className="size-3" />:{linkedProxy.port}
+                                </button>
+                              ) : (
+                                <button onClick={() => createSocksForNode(node.id)} className="flex h-8 items-center gap-1 rounded-lg border border-dashed border-line px-2 text-xs text-muted">
+                                  <Icon name="plus" className="size-3" />S5
+                                </button>
+                              )}
+                              <button onClick={() => setEditingNode(node)} className="flex size-8 items-center justify-center rounded-lg text-muted hover:bg-panel"><Icon name="settings" className="size-4" /></button>
+                              <button onClick={() => deleteNode(node.id)} className="flex size-8 items-center justify-center rounded-lg text-danger hover:bg-danger-soft"><Icon name="trash" className="size-4" /></button>
+                            </div>
                           </div>
                         </div>
                       );
@@ -1329,7 +1467,7 @@ export default function App() {
                     <div><span className="font-semibold">本地安全提示：</span>代理端口默认仅绑定 127.0.0.1。复制地址后，可粘贴到浏览器、开发工具或其他本地应用中。</div>
                   </div>
                 </div>
-                <div className="grid gap-5 lg:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   {proxies.map((proxy) => {
                     const node = nodes.find((item) => item.id === proxy.nodeId);
                     return (
@@ -1382,86 +1520,276 @@ export default function App() {
 
             {page === "claude" && <ClaudeLauncher notify={notify} copyText={copyText} />}
 
-            {page === "apps" && (
-              <div className="space-y-6">
-                <div className="rounded-3xl border border-line bg-white p-6 shadow-xs">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <div className="font-bold">新增应用代理规则</div>
-                      <div className="mt-1 text-sm text-muted">选择程序后，将该进程的连接转发到指定 SOCKS5 端口</div>
-                    </div>
-                    <span className="rounded-full bg-blue-soft px-3 py-1 text-xs font-bold text-blue">Proxifier 模式</span>
-                  </div>
-                  <div className="mt-6 grid gap-4 lg:grid-cols-[1.2fr_1fr_auto]">
-                    <div>
-                      <div className="mb-2 text-xs font-semibold text-muted">应用程序</div>
-                      <label className="flex h-12 cursor-pointer items-center gap-3 rounded-xl border border-line bg-canvas px-3 hover:border-accent">
-                        <Icon name="terminal" className="size-4 text-subtle" />
-                        <span className={`min-w-0 flex-1 truncate text-sm ${appExe ? "font-semibold text-ink" : "text-subtle"}`}>{appExe || "选择 .exe 程序"}</span>
-                        <span className="text-xs font-semibold text-accent">浏览</span>
-                        <input type="file" accept=".exe" className="hidden" onChange={(event) => setAppExe(event.target.files?.[0]?.name ?? "")} />
-                      </label>
-                    </div>
-                    <div>
-                      <label className="mb-2 block text-xs font-semibold text-muted" htmlFor="app-proxy">目标 SOCKS5</label>
-                      <select id="app-proxy" value={appProxyId} onChange={(event) => setAppProxyId(Number(event.target.value))} className="h-12 w-full rounded-xl border border-line bg-canvas px-3 text-sm font-medium outline-none focus:border-accent">
-                        {proxies.map((proxy) => {
-                          const node = nodes.find((item) => item.id === proxy.nodeId);
-                          return <option key={proxy.id} value={proxy.id}>127.0.0.1:{proxy.port} · {node?.name}</option>;
-                        })}
-                      </select>
-                    </div>
-                    <div className="flex items-end">
-                      <Button
-                        variant="primary"
-                        className="!h-12"
-                        disabled={!appExe || !proxies.length}
-                        onClick={() => {
-                          setAppProfiles((current) => [...current, { id: Date.now(), name: appExe, path: `C:\\Selected Apps\\${appExe}`, proxyId: appProxyId, enabled: true }]);
-                          setAppExe("");
-                          notify("应用代理规则已创建");
-                        }}
-                      >
-                        添加规则
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+            {page === "apps" && (() => {
+              const categories = ["全部", "包管理器", "版本控制", "开发工具", "编辑器IDE", "通讯协作", "其他工具"] as const;
+              const categoryColors: Record<string, string> = {
+                "包管理器": "bg-violet-soft text-violet", "版本控制": "bg-amber-soft text-amber",
+                "开发工具": "bg-blue-soft text-blue", "编辑器IDE": "bg-emerald-soft text-emerald",
+                "通讯协作": "bg-pink-soft text-pink", "其他工具": "bg-panel text-muted",
+              };
+              const filtered = presetApps.filter((a) =>
+                (appCategory === "全部" || a.category === appCategory) &&
+                (a.name.toLowerCase().includes(appSearchQuery.toLowerCase()) || a.exe.toLowerCase().includes(appSearchQuery.toLowerCase()) || a.desc.includes(appSearchQuery))
+              );
+              const detectedCount = presetApps.filter((a) => a.detected).length;
+              const enabledCount = presetApps.filter((a) => a.enabled).length;
+              const allFilteredSelected = filtered.length > 0 && filtered.every((a) => selectedAppIds.includes(a.id));
 
-                <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-xs">
-                  <div className="flex items-center justify-between border-b border-line px-6 py-5">
-                    <div>
-                      <div className="font-bold">应用规则</div>
-                      <div className="mt-1 text-sm text-muted">程序启动后自动应用对应代理</div>
-                    </div>
-                    <div className="text-sm text-muted">{appProfiles.filter((profile) => profile.enabled).length} 条已启用</div>
-                  </div>
-                  <div className="divide-y divide-line">
-                    {appProfiles.map((profile) => {
-                      const proxy = proxies.find((item) => item.id === profile.proxyId);
-                      const node = nodes.find((item) => item.id === proxy?.nodeId);
-                      return (
-                        <div key={profile.id} className="flex items-center gap-4 px-6 py-5">
-                          <div className="flex size-11 items-center justify-center rounded-2xl bg-panel text-muted"><Icon name="terminal" /></div>
-                          <div className="min-w-0 flex-1">
-                            <div className="text-sm font-semibold">{profile.name}</div>
-                            <div className="mt-1 truncate font-mono text-xs text-subtle">{profile.path}</div>
-                          </div>
-                          <div className="min-w-48 rounded-xl bg-canvas px-3 py-2">
-                            <div className="font-mono text-xs font-semibold">{proxy ? `127.0.0.1:${proxy.port}` : "端口不可用"}</div>
-                            <div className="mt-0.5 truncate text-xs text-muted">{node?.name ?? "需要重新选择节点"}</div>
-                          </div>
-                          <button onClick={() => setAppProfiles((current) => current.map((item) => item.id === profile.id ? { ...item, enabled: !item.enabled } : item))} className={`relative h-7 w-12 rounded-full transition ${profile.enabled ? "bg-emerald" : "bg-line-strong"}`} aria-label="启用应用规则">
-                            <span className={`absolute top-1 size-5 rounded-full bg-white shadow-sm transition ${profile.enabled ? "left-6" : "left-1"}`} />
-                          </button>
-                          <Button variant="danger" className="!size-9 !p-0" onClick={() => setAppProfiles((current) => current.filter((item) => item.id !== profile.id))} aria-label="删除规则"><Icon name="trash" className="size-4" /></Button>
+              function detectApps() {
+                setDetectingApps(true);
+                window.setTimeout(() => {
+                  const detectedIds = ["nodejs", "python", "go", "git", "vscode", "cursor", "docker", "chrome", "gh-cli", "curl", "postman", "telegram", "dotnet"];
+                  setPresetApps((cur) => cur.map((a) => detectedIds.includes(a.id)
+                    ? { ...a, detected: true, detectedPath: a.defaultPath }
+                    : { ...a, detected: false, detectedPath: "" }
+                  ));
+                  setDetectingApps(false);
+                  notify(`检测完成，发现 ${detectedIds.length} 个已安装应用`);
+                }, 1400);
+              }
+
+              function applyBatchProxy() {
+                if (!batchProxyId || selectedAppIds.length === 0) return;
+                setPresetApps((cur) => cur.map((a) => selectedAppIds.includes(a.id) ? { ...a, proxyId: batchProxyId, enabled: true } : a));
+                notify(`已将 ${selectedAppIds.length} 个应用设置为同一 SOCKS5 出口`);
+                setSelectedAppIds([]);
+              }
+
+              const categoryIcons: Record<string, string> = {
+                "全部": "grid", "包管理器": "terminal", "版本控制": "globe", "开发工具": "server",
+                "编辑器IDE": "settings", "通讯协作": "shield", "其他工具": "more",
+              };
+
+              return (
+                <div className="flex gap-6 min-h-0">
+                  {/* ── 左侧面板 ── */}
+                  <div className="hidden md:flex w-56 shrink-0 flex-col gap-4">
+                    {/* 统计卡片 */}
+                    <div className="rounded-2xl border border-line bg-white p-4 shadow-xs space-y-3">
+                      <div className="text-xs font-semibold uppercase tracking-wider text-subtle">应用代理统计</div>
+                      <div className="grid grid-cols-2 gap-3">
+                        <div className="rounded-xl bg-emerald-soft p-3 text-center">
+                          <div className="text-2xl font-bold text-emerald">{detectedCount}</div>
+                          <div className="mt-0.5 text-xs text-emerald/70">已检测</div>
                         </div>
-                      );
-                    })}
+                        <div className="rounded-xl bg-accent-soft p-3 text-center">
+                          <div className="text-2xl font-bold text-accent">{enabledCount}</div>
+                          <div className="mt-0.5 text-xs text-accent/70">已启用</div>
+                        </div>
+                      </div>
+                      <div className="text-xs text-muted">共 {presetApps.length} 个预设应用</div>
+                    </div>
+
+                    {/* 一键检测按钮 */}
+                    <button
+                      onClick={detectApps}
+                      disabled={detectingApps}
+                      className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl border border-accent/30 bg-accent-soft text-sm font-semibold text-accent transition hover:bg-accent/15 disabled:opacity-50"
+                    >
+                      <Icon name={detectingApps ? "refresh" : "search"} className={`size-4 ${detectingApps ? "animate-spin" : ""}`} />
+                      {detectingApps ? "正在检测…" : "一键检测已安装应用"}
+                    </button>
+
+                    {/* 分类导航 */}
+                    <div className="overflow-hidden rounded-2xl border border-line bg-white shadow-xs">
+                      <div className="border-b border-line px-4 py-3 text-xs font-semibold uppercase tracking-wider text-subtle">应用分类</div>
+                      <div className="py-1">
+                        {categories.map((cat) => {
+                          const count = cat === "全部" ? presetApps.length : presetApps.filter((a) => a.category === cat).length;
+                          const active = appCategory === cat;
+                          return (
+                            <button
+                              key={cat}
+                              onClick={() => setAppCategory(cat)}
+                              className={`flex w-full items-center gap-3 px-4 py-2.5 text-sm transition-colors ${active ? "bg-accent-soft text-accent font-semibold" : "text-ink hover:bg-canvas"}`}
+                            >
+                              <Icon name={(categoryIcons[cat] ?? "grid") as IconName} className="size-4 shrink-0" />
+                              <span className="flex-1 text-left">{cat}</span>
+                              <span className={`text-xs font-semibold tabular-nums ${active ? "text-accent" : "text-subtle"}`}>{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* Proxifier 模式标记 */}
+                    <div className="rounded-2xl border border-blue/20 bg-blue-soft p-4">
+                      <div className="flex items-center gap-2">
+                        <span className="rounded-full bg-blue px-2 py-0.5 text-xs font-bold text-white">Proxifier</span>
+                        <span className="text-xs font-semibold text-blue">进程级拦截</span>
+                      </div>
+                      <div className="mt-2 text-xs text-blue/70 leading-relaxed">按 .exe 名称拦截所有出站流量，路由至指定 SOCKS5 出口</div>
+                    </div>
+                  </div>
+
+                  {/* ── 右侧主内容 ── */}
+                  <div className="min-w-0 flex-1 space-y-4">
+                    {/* 移动端检测按钮 + 分类（lg以下显示） */}
+                    <div className="md:hidden space-y-3">
+                      <button onClick={detectApps} disabled={detectingApps} className="flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-accent/30 bg-accent-soft text-sm font-semibold text-accent transition disabled:opacity-50">
+                        <Icon name={detectingApps ? "refresh" : "search"} className={`size-4 ${detectingApps ? "animate-spin" : ""}`} />
+                        {detectingApps ? "正在检测…" : "一键检测已安装应用"}
+                      </button>
+                      <div className="flex flex-wrap gap-2">
+                        {categories.map((cat) => {
+                          const count = cat === "全部" ? presetApps.length : presetApps.filter((a) => a.category === cat).length;
+                          return (
+                            <button key={cat} onClick={() => setAppCategory(cat)} className={`flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-semibold transition ${appCategory === cat ? "bg-ink text-white" : "bg-white border border-line text-muted hover:border-accent hover:text-accent"}`}>
+                              {cat} <span className="opacity-60">{count}</span>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    {/* 搜索栏 */}
+                    <div className="flex items-center gap-3">
+                      <div className="relative flex-1 lg:max-w-xs">
+                        <Icon name="search" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-subtle" />
+                        <input value={appSearchQuery} onChange={(e) => setAppSearchQuery(e.target.value)} placeholder="搜索应用名称或 exe…" className="h-10 w-full rounded-xl border border-line bg-white pl-9 pr-3 text-sm outline-none focus:border-accent" />
+                      </div>
+                      <div className="ml-auto flex items-center gap-2 md:hidden">
+                        <span className="rounded-full bg-emerald-soft px-2.5 py-1 text-xs font-semibold text-emerald">{detectedCount} 已检测</span>
+                        <span className="rounded-full bg-panel px-2.5 py-1 text-xs font-semibold">{enabledCount} 已启用</span>
+                      </div>
+                    </div>
+
+                    {/* 批量操作栏（有选中时显示） */}
+                    {selectedAppIds.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-accent/20 bg-accent-soft px-5 py-3">
+                        <span className="text-sm font-semibold text-accent">已选 {selectedAppIds.length} 个应用</span>
+                        <div className="ml-auto flex flex-wrap items-center gap-2">
+                          <span className="text-sm text-muted">统一设置 SOCKS5：</span>
+                          <select value={batchProxyId ?? ""} onChange={(e) => setBatchProxyId(Number(e.target.value))} className="h-9 rounded-xl border border-line bg-white px-3 text-sm outline-none focus:border-accent">
+                            <option value="">选择出口…</option>
+                            {proxies.map((p) => {
+                              const n = nodes.find((x) => x.id === p.nodeId);
+                              return <option key={p.id} value={p.id}>:{p.port} · {n?.name}</option>;
+                            })}
+                          </select>
+                          <button onClick={applyBatchProxy} disabled={!batchProxyId} className="h-9 rounded-xl bg-accent px-4 text-sm font-semibold text-white hover:bg-accent/90 disabled:opacity-40">批量应用并启用</button>
+                          <button onClick={() => setSelectedAppIds([])} className="h-9 rounded-xl border border-line bg-white px-3 text-sm text-muted hover:bg-canvas">取消选择</button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* 应用列表 */}
+                    <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-xs">
+                      <div className="grid grid-cols-[2rem_minmax(0,1fr)_8rem_16rem_5rem] items-center gap-4 border-b border-line bg-canvas px-5 py-3 text-xs font-semibold uppercase tracking-wider text-subtle">
+                        <input type="checkbox" className="size-4 accent-accent" checked={allFilteredSelected} onChange={(e) => setSelectedAppIds(e.target.checked ? [...new Set([...selectedAppIds, ...filtered.map((a) => a.id)])] : selectedAppIds.filter((id) => !filtered.some((a) => a.id === id)))} />
+                        <div>应用</div>
+                        <div>状态</div>
+                        <div>SOCKS5 出口</div>
+                        <div className="text-right">启用</div>
+                      </div>
+                      <div className="divide-y divide-line">
+                        {filtered.map((app) => {
+                          const isSelected = selectedAppIds.includes(app.id);
+                          const linkedProxy = proxies.find((p) => p.id === app.proxyId);
+                          const linkedNode = nodes.find((n) => n.id === linkedProxy?.nodeId);
+                          return (
+                            <div key={app.id} className={`grid grid-cols-[2rem_minmax(0,1fr)_8rem_16rem_5rem] items-center gap-4 px-5 py-3.5 transition-colors hover:bg-canvas ${isSelected ? "bg-accent-soft" : ""}`}>
+                              <input type="checkbox" className="size-4 accent-accent" checked={isSelected} onChange={(e) => setSelectedAppIds((prev) => e.target.checked ? [...prev, app.id] : prev.filter((id) => id !== app.id))} />
+                              <div className="flex min-w-0 items-center gap-3">
+                                <div className={`flex size-9 shrink-0 items-center justify-center rounded-xl text-xs font-bold ${categoryColors[app.category] ?? "bg-panel text-muted"}`}>
+                                  {app.name.slice(0, 2).toUpperCase()}
+                                </div>
+                                <div className="min-w-0">
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-semibold">{app.name}</span>
+                                    <span className="rounded px-1.5 py-0.5 text-xs font-medium" style={{background: "var(--color-canvas)", color: "var(--color-muted)"}}>{app.exe}</span>
+                                  </div>
+                                  <div className="mt-0.5 truncate text-xs text-muted">{app.detected ? app.detectedPath : app.desc}</div>
+                                </div>
+                              </div>
+                              <div>
+                                {app.detected
+                                  ? <span className="inline-flex items-center gap-1 rounded-full bg-emerald-soft px-2.5 py-1 text-xs font-semibold text-emerald"><span className="size-1.5 rounded-full bg-emerald" />已检测</span>
+                                  : <span className="inline-flex items-center gap-1 rounded-full bg-panel px-2.5 py-1 text-xs font-semibold text-muted"><span className="size-1.5 rounded-full bg-subtle" />未检测</span>
+                                }
+                              </div>
+                              <div>
+                                <select
+                                  value={app.proxyId ?? ""}
+                                  onChange={(e) => setPresetApps((cur) => cur.map((a) => a.id === app.id ? { ...a, proxyId: Number(e.target.value) || null } : a))}
+                                  className="h-8 w-full rounded-lg border border-line bg-canvas px-2 text-xs outline-none focus:border-accent"
+                                >
+                                  <option value="">未设置</option>
+                                  {proxies.map((p) => {
+                                    const n = nodes.find((x) => x.id === p.nodeId);
+                                    return <option key={p.id} value={p.id}>:{p.port} · {n?.name}</option>;
+                                  })}
+                                </select>
+                                {linkedNode && <div className="mt-0.5 truncate pl-1 text-xs text-muted">{linkedNode.region}</div>}
+                              </div>
+                              <div className="flex justify-end">
+                                <button
+                                  onClick={() => setPresetApps((cur) => cur.map((a) => a.id === app.id ? { ...a, enabled: !a.enabled } : a))}
+                                  className={`relative h-6 w-11 rounded-full transition ${app.enabled ? "bg-emerald" : "bg-line-strong"}`}
+                                >
+                                  <span className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition-all ${app.enabled ? "left-6" : "left-1"}`} />
+                                </button>
+                              </div>
+                            </div>
+                          );
+                        })}
+                        {filtered.length === 0 && (
+                          <div className="px-6 py-12 text-center text-sm text-muted">没有匹配的应用</div>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* 自定义规则 */}
+                    <div className="overflow-hidden rounded-3xl border border-line bg-white shadow-xs">
+                      <div className="flex items-center justify-between border-b border-line px-6 py-4">
+                        <div>
+                          <div className="font-bold">自定义应用规则</div>
+                          <div className="mt-0.5 text-sm text-muted">手动添加列表中没有的程序</div>
+                        </div>
+                        <span className="rounded-full bg-blue-soft px-3 py-1 text-xs font-bold text-blue">Proxifier 模式</span>
+                      </div>
+                      <div className="grid gap-3 p-5 md:grid-cols-[1.2fr_1fr_auto]">
+                        <label className="flex h-10 cursor-pointer items-center gap-3 rounded-xl border border-line bg-canvas px-3 hover:border-accent">
+                          <Icon name="terminal" className="size-4 text-subtle" />
+                          <span className={`min-w-0 flex-1 truncate text-sm ${appExe ? "font-semibold text-ink" : "text-subtle"}`}>{appExe || "选择 .exe 程序"}</span>
+                          <span className="text-xs font-semibold text-accent">浏览</span>
+                          <input type="file" accept=".exe" className="hidden" onChange={(event) => setAppExe(event.target.files?.[0]?.name ?? "")} />
+                        </label>
+                        <select value={appProxyId} onChange={(e) => setAppProxyId(Number(e.target.value))} className="h-10 w-full rounded-xl border border-line bg-canvas px-3 text-sm outline-none focus:border-accent">
+                          {proxies.map((p) => { const n = nodes.find((x) => x.id === p.nodeId); return <option key={p.id} value={p.id}>:{p.port} · {n?.name}</option>; })}
+                        </select>
+                        <Button variant="primary" className="!h-10" disabled={!appExe || !proxies.length} onClick={() => { setAppProfiles((cur) => [...cur, { id: Date.now(), name: appExe, path: `C:\\Apps\\${appExe}`, proxyId: appProxyId, enabled: true }]); setAppExe(""); notify("自定义规则已添加"); }}>添加</Button>
+                      </div>
+                      {appProfiles.length > 0 && (
+                        <div className="divide-y divide-line border-t border-line">
+                          {appProfiles.map((profile) => {
+                            const proxy = proxies.find((p) => p.id === profile.proxyId);
+                            const node = nodes.find((n) => n.id === proxy?.nodeId);
+                            return (
+                              <div key={profile.id} className="flex items-center gap-4 px-5 py-4">
+                                <div className="flex size-9 items-center justify-center rounded-xl bg-panel text-muted"><Icon name="terminal" className="size-4" /></div>
+                                <div className="min-w-0 flex-1">
+                                  <div className="text-sm font-semibold">{profile.name}</div>
+                                  <div className="mt-0.5 truncate font-mono text-xs text-subtle">{profile.path}</div>
+                                </div>
+                                <div className="rounded-lg bg-canvas px-3 py-1.5 text-xs">
+                                  <div className="font-mono font-semibold">{proxy ? `127.0.0.1:${proxy.port}` : "未配置"}</div>
+                                  <div className="text-muted">{node?.name}</div>
+                                </div>
+                                <button onClick={() => setAppProfiles((cur) => cur.map((p) => p.id === profile.id ? { ...p, enabled: !p.enabled } : p))} className={`relative h-6 w-11 rounded-full transition ${profile.enabled ? "bg-emerald" : "bg-line-strong"}`}>
+                                  <span className={`absolute top-1 size-4 rounded-full bg-white shadow-sm transition-all ${profile.enabled ? "left-6" : "left-1"}`} />
+                                </button>
+                                <Button variant="danger" className="!size-8 !p-0" onClick={() => setAppProfiles((cur) => cur.filter((p) => p.id !== profile.id))}><Icon name="trash" className="size-4" /></Button>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
 
             {page === "subscriptions" && (
               <div className="space-y-5">
@@ -1475,7 +1803,7 @@ export default function App() {
                   </div>
                   <Button variant="primary" icon="refresh" onClick={() => notify("全部订阅已更新")}>更新全部</Button>
                 </div>
-                <div className="grid gap-5 lg:grid-cols-2">
+                <div className="grid gap-5 md:grid-cols-2">
                   {[
                     { name: "Work Premium", url: "https://sub.example.com/••••••", count: 18, time: "12 分钟前", enabled: true },
                     { name: "Personal Backup", url: "https://cloud.example.net/••••••", count: 8, time: "2 小时前", enabled: true },
@@ -1518,7 +1846,7 @@ export default function App() {
 
             {page === "routing" && (
               <div className="space-y-6">
-                <div className="grid gap-4 lg:grid-cols-4">
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                   {[
                     { key: "bypass" as const, title: "绕过大陆", detail: "大陆与局域网直连，其他流量代理", icon: "globe" as IconName },
                     { key: "blacklist" as const, title: "黑名单", detail: "仅代理被屏蔽网站，其他流量直连", icon: "shield" as IconName },
@@ -1559,7 +1887,7 @@ export default function App() {
 
                     {showRuleForm && (
                       <div className="border-b border-line bg-accent-soft p-5">
-                        <div className="grid gap-3 lg:grid-cols-[1fr_10rem_auto]">
+                        <div className="grid gap-3 md:grid-cols-[1fr_10rem_auto]">
                           <input value={ruleDomain} onChange={(event) => setRuleDomain(event.target.value)} placeholder="域名、IP、GeoSite 或进程，例如 github.com" className="h-11 rounded-xl border border-line bg-white px-3 font-mono text-sm outline-none focus:border-accent focus:ring-4 focus:ring-accent/10" />
                           <select value={ruleAction} onChange={(event) => setRuleAction(event.target.value as "代理" | "直连" | "阻止")} className="h-11 rounded-xl border border-line bg-white px-3 text-sm font-semibold outline-none">
                             <option value="代理">通过代理</option>
