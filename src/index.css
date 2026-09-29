@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@theme {
+  --color-canvas: #f6f7f9;
+  --color-sidebar: #f1f3f5;
+  --color-panel: #eef0f3;
+  --color-line: #e2e5e9;
+  --color-line-strong: #cbd0d7;
+  --color-ink: #15181d;
+  --color-ink-soft: #282d35;
+  --color-muted: #68707d;
+  --color-subtle: #98a0ac;
+  --color-accent: #6657e8;
+  --color-accent-soft: #eeecff;
+  --color-accent-glow: #7767ff;
+  --color-overlay: rgb(16 19 24 / 45%);
+  --color-emerald: #169b70;
+  --color-emerald-soft: #e5f7f0;
+  --color-success-light: #61e6b8;
+  --color-blue: #3677d4;
+  --color-blue-soft: #e9f1fc;
+  --color-violet: #7254d7;
+  --color-violet-soft: #f0ecfc;
+  --color-amber: #b46b16;
+  --color-amber-soft: #fff2dc;
+  --color-danger: #ce3f51;
+  --color-danger-soft: #feeced;
+  --color-log: #11151b;
+  --color-log-muted: #c0c7d2;
+  --color-blue-light: #79adf6;
+  --color-amber-light: #edb55e;
+  --color-claude: #11111a;
+  --color-claude-side: #171724;
+  --color-claude-accent: #6657e8;
+  --color-claude-accent-hover: #7568ef;
+  --color-claude-light: #aaa2ff;
+  --shadow-xs: 0 1px 2px rgb(18 24 33 / 5%);
+  --shadow-card: 0 16px 40px rgb(20 24 32 / 15%);
+  --shadow-modal: 0 24px 70px rgb(20 24 32 / 20%);
+  --shadow-status: 0 0 0 4px rgb(97 230 184 / 14%);
+  --font-sans: Inter, "SF Pro Display", "PingFang SC", "Microsoft YaHei", system-ui, sans-serif;
+  --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+:root {
+  color: var(--color-ink);
+  background: var(--color-canvas);
+  font-family: var(--font-sans);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  min-width: 64rem;
+  min-height: 100vh;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+::selection {
+  background: var(--color-accent-soft);
+  color: var(--color-accent);
+}
